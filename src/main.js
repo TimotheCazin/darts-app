@@ -3,6 +3,7 @@ import App from './App.vue'
 import vuetify from './plugins/vuetify'
 import * as VueRouter from 'vue-router'
 import { loadFonts } from './plugins/webfontloader'
+import store from './store'
 
 loadFonts()
 
@@ -16,6 +17,11 @@ const routes = [
     name: 'Cricket',
     component: () => import('./components/CricketPage.vue')
   },
+  {
+    path: '/x01',
+    name: 'X01',
+    component: () => import('./components/X01Page.vue')
+  },
 ]
 
 const router = VueRouter.createRouter({
@@ -24,4 +30,4 @@ const router = VueRouter.createRouter({
   routes, // short for `routes: routes`
 })
 
-createApp(App).use(router).use(vuetify).mount('#app')
+createApp(App).use(store).use(router).use(vuetify).mount('#app')
