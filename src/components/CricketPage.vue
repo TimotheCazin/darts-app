@@ -10,7 +10,7 @@
                 :cols="Math.trunc(12/($store.state.players.length+1))"
                 align="center"
                 :class="'px-0 bg-'+colors[i]"
-                
+                style="height:100%;"
             >
                 {{ player.name }}
             </v-col>
@@ -20,7 +20,7 @@
             v-for="(data, index) in points_available"
             :key="index"
             style="height:12vh;"
-             align="center"
+            align="center"
         >
             <v-col
                 :cols="12-($store.state.players.length*Math.trunc(12/($store.state.players.length+1)))"

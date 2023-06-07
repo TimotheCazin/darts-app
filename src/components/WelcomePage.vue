@@ -107,7 +107,72 @@
             </v-dialog>
         </v-col>
         <v-col cols="12" sm="6" md="4">
-            <v-btn block rounded="lg" size="x-large" href="/cricket">Cricket</v-btn>
+            <v-dialog
+            v-model="dialog_cricket"
+            width="auto"
+            max-width="600px"
+            >
+                <template v-slot:activator="{ props }">
+                    <v-btn block rounded="lg" size="x-large" v-bind="props">Cricket</v-btn>
+                </template>
+                <v-card>
+                    <v-card-title>
+                    <span class="text-h5">Paramètres de la partie</span>
+                    </v-card-title>
+                    <v-card-text>
+                    <v-container>
+                        <v-row justify="center">
+                            <v-col>
+                                <p class="text-h6">Joueurs :</p>
+                            </v-col> 
+                        </v-row>
+                        <v-row justify="center">
+                            <template v-for="(player, i) in players" :key="i">
+                                <v-chip
+                                class="ma-1"
+                                color="primary"
+                                label
+                                >
+                                <v-icon start icon="mdi-account-circle-outline"></v-icon>
+                                    {{ player.name }}
+                                <v-icon end icon="mdi-close-circle-outline" @click="removePlayer(i)"></v-icon>
+                                </v-chip>
+                            </template>
+                        </v-row>
+                        <v-row justify="center">
+                            <v-col cols="7">
+                            <v-text-field
+                                v-model="newPlayer"
+                                density="compact"
+                                variant="solo"
+                                label="Nouveau"
+                                append-inner-icon="mdi-plus-circle-outline"
+                                single-line
+                                hide-details
+                                @keyup.enter="addPlayer"
+                                @click:append-inner="addPlayer"
+                            ></v-text-field>
+                            </v-col>
+                        </v-row>
+                    </v-container>
+                    </v-card-text>
+                    <v-card-actions>
+                    <v-spacer></v-spacer>
+                    <v-btn
+                        color="blue-darken-1"
+                        @click="dialog_cricket = false"
+                    >
+                        Fermer
+                    </v-btn>
+                    <v-btn
+                        color="blue-darken-1"
+                        @click="launchCricket"
+                    >
+                        Lancer partie
+                    </v-btn>
+                    </v-card-actions>
+                </v-card>
+            </v-dialog>
         </v-col>
       </v-row>
     </v-container>
@@ -121,6 +186,7 @@
     data() {
         return {
             dialog_x01: false,
+            dialog_cricket: false,
             limit: "301",
             newPlayer: '',
             players: this.$store.state.players,
@@ -141,6 +207,11 @@
             this.$store.state.players = this.players
             this.$store.state.limit_x01 = this.limit
             this.$router.push('/x01')
+        },
+        launchCricket() {
+            this.dialog_cricket = false
+            this.$store.state.players = this.players
+            this.$router.push('/cricket')
         }
     },
     computed: {
