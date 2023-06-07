@@ -107,7 +107,7 @@
             </v-dialog>
         </v-col>
         <v-col cols="12" sm="6" md="4">
-            <v-btn block rounded="lg" size="x-large">Cricket</v-btn>
+            <v-btn block rounded="lg" size="x-large" href="/cricket">Cricket</v-btn>
         </v-col>
       </v-row>
     </v-container>
