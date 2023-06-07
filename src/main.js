@@ -4,6 +4,7 @@ import vuetify from './plugins/vuetify'
 import * as VueRouter from 'vue-router'
 import { loadFonts } from './plugins/webfontloader'
 import store from './store'
+import './registerServiceWorker'
 
 loadFonts()
 
