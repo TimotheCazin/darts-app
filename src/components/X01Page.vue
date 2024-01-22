@@ -23,19 +23,9 @@
                                 <v-card-subtitle class="text-center">{{ message(this.players[turn%this.players.length]) }}</v-card-subtitle>
                                 <v-container>
                                     <v-row>
-                                        <v-col cols="4">
+                                        <v-col v-for="num in 3" :key="num" cols="4">
                                             <v-card variant="outlined">
-                                                <v-card-title class="text-center font-weight-bold">{{ values_scored[0] }}</v-card-title>
-                                            </v-card>
-                                        </v-col>
-                                        <v-col cols="4">
-                                            <v-card variant="outlined">
-                                                <v-card-title class="text-center font-weight-bold">{{ values_scored[1] }}</v-card-title>
-                                            </v-card>
-                                        </v-col>
-                                        <v-col cols="4">
-                                            <v-card variant="outlined">
-                                                <v-card-title class="text-center font-weight-bold">{{ values_scored[2] }}</v-card-title>
+                                                <v-card-title class="text-center font-weight-bold">{{ values_scored[num-1] }}</v-card-title>
                                             </v-card>
                                         </v-col>
                                     </v-row>
@@ -87,65 +77,8 @@
                 </v-col>
             </v-row>
             <v-row justify="center">
-                <v-col cols="2">
-                    <v-btn block color="primary" @click="valueScored(1)">{{multi}}1</v-btn>
-                </v-col>
-                <v-col cols="2">
-                    <v-btn block color="primary" @click="valueScored(2)">{{multi}}2</v-btn>
-                </v-col>
-                <v-col cols="2">
-                    <v-btn block color="primary" @click="valueScored(3)">{{multi}}3</v-btn>
-                </v-col>
-                <v-col cols="2">
-                    <v-btn block color="primary" @click="valueScored(4)">{{multi}}4</v-btn>
-                </v-col>
-                <v-col cols="2">
-                    <v-btn block color="primary" @click="valueScored(5)">{{multi}}5</v-btn>
-                </v-col>
-                <v-col cols="2">
-                    <v-btn block color="primary" @click="valueScored(6)">{{multi}}6</v-btn>
-                </v-col>
-                <v-col cols="2">
-                    <v-btn block color="primary" @click="valueScored(7)">{{multi}}7</v-btn>
-                </v-col>
-                <v-col cols="2">
-                    <v-btn block color="primary" @click="valueScored(8)">{{multi}}8</v-btn>
-                </v-col>
-                <v-col cols="2">
-                    <v-btn block color="primary" @click="valueScored(9)">{{multi}}9</v-btn>
-                </v-col>
-                <v-col cols="2">
-                    <v-btn block color="primary" @click="valueScored(10)">{{multi}}10</v-btn>
-                </v-col>
-                <v-col cols="2">
-                    <v-btn block color="primary" @click="valueScored(11)">{{multi}}11</v-btn>
-                </v-col>
-                <v-col cols="2">
-                    <v-btn block color="primary" @click="valueScored(12)">{{multi}}12</v-btn>
-                </v-col>
-                <v-col cols="2">
-                    <v-btn block color="primary" @click="valueScored(13)">{{multi}}13</v-btn>
-                </v-col>
-                <v-col cols="2">
-                    <v-btn block color="primary" @click="valueScored(14)">{{multi}}14</v-btn>
-                </v-col>
-                <v-col cols="2">
-                    <v-btn block color="primary" @click="valueScored(15)">{{multi}}15</v-btn>
-                </v-col>
-                <v-col cols="2">
-                    <v-btn block color="primary" @click="valueScored(16)">{{multi}}16</v-btn>
-                </v-col>
-                <v-col cols="2">
-                    <v-btn block color="primary" @click="valueScored(17)">{{multi}}17</v-btn>
-                </v-col>
-                <v-col cols="2">
-                    <v-btn block color="primary" @click="valueScored(18)">{{multi}}18</v-btn>
-                </v-col>
-                <v-col cols="2">
-                    <v-btn block color="primary" @click="valueScored(19)">{{multi}}19</v-btn>
-                </v-col>
-                <v-col cols="2">
-                    <v-btn block color="primary" @click="valueScored(20)">{{multi}}20</v-btn>
+                <v-col v-for="num in 20" :key="num" cols="2">
+                    <v-btn block color="primary" @click="valueScored(num)">{{multi}}{{num}}</v-btn>
                 </v-col>
                 <v-col cols="2" v-if="multi==''">
                     <v-btn block color="primary" @click="valueScored(25)">25</v-btn>
