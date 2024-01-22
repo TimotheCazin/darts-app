@@ -7,7 +7,7 @@
                         <v-card class="big-border-bottom mt-2" :style="{ 'border-bottom-color': colors[i] }">
                         <v-card-item>
                             <v-card-title class="text-center text-h6">{{ player.name.slice(0,9) }}</v-card-title>
-                            <v-card-subtitle class="text-center">Avg : 13</v-card-subtitle>
+                            <v-card-subtitle class="text-center">Avg : {{ player.avg }}</v-card-subtitle>
                         </v-card-item>
                         <v-card-text class="text-center">
                             <p class="text-h5 font-weight-bold">{{ player.score }}</p>
@@ -17,15 +17,15 @@
                 </v-row>
                 <v-row justify="center">
                     <v-col cols="8">
-                        <v-card class="big-border-bottom mt-2" :style="{ 'border-bottom-color': colors[turn%this.players.length] }">
+                        <v-card class="big-border-bottom mt-2" :style="{ 'border-bottom-color': colors[turn%this.nb_players] }">
                             <v-card-item>
-                                <v-card-title class="text-center text-h6">{{this.players[turn%this.players.length].name}}</v-card-title>
-                                <v-card-subtitle class="text-center">{{ message(this.players[turn%this.players.length]) }}</v-card-subtitle>
+                                <v-card-title class="text-center text-h6">{{this.players[turn%this.nb_players].name}}</v-card-title>
+                                <v-card-subtitle class="text-center">{{ message(this.players[turn%this.nb_players]) }}</v-card-subtitle>
                                 <v-container>
                                     <v-row>
                                         <v-col v-for="num in 3" :key="num" cols="4">
                                             <v-card variant="outlined">
-                                                <v-card-title class="text-center font-weight-bold">{{ values_scored[num-1] }}</v-card-title>
+                                                <v-card-title class="text-center font-weight-bold">{{ currentDarts[num-1] }}</v-card-title>
                                             </v-card>
                                         </v-col>
                                     </v-row>
@@ -40,13 +40,13 @@
         <v-container>
             <v-row>
                 <v-col cols="auto"  class="my-auto"  v-if="this.turn !== 0">
-                    Last : {{this.players[(turn-1)%this.players.length].name}} - {{ this.historic_values[this.historic_values.length-1].join('/') }}
+                    Last : {{this.players[(turn-1)%this.nb_players].name}} - {{ lastPlayerDarts.join('/') }}
                 </v-col>
                 <v-col cols="7"  class="my-auto"  v-else>
                 </v-col>
-                <v-col cols="auto" class="my-auto" v-if="(this.turn !==0) || (this.scores.length !==0) ">
+                <v-col cols="auto" class="my-auto" v-if="(this.turn !==0) || (this.num_dart !== 1)">
                     <v-btn block @click="undo()">
-                        UNDO
+                        ANNULER
                     </v-btn>
                 </v-col>
             </v-row>
@@ -96,19 +96,20 @@ export default {
     name: 'X01Page',
     data() {
         return {
-            players: this.$store.state.players,
-            limit: this.$store.state.limit_x01,
+            players: [{'name':'Tim'},{'name':'Titou'},{'name':'Lili'}],
+            nb_players: 0,
+            limit: 301,
             colors: ['red', 'blue', 'yellow', 'green', 'purple', 'orange', 'pink', 'teal'],
-            turn:0,
+            turn: 0,
             multi: "",
-            values_scored: [],
-            scores: [],
-            historic_values : [],
-            historic_scores : [],
+            num_dart: 1,
         }
     },
     created() {
         this.initializeScores();
+        this.initializeHistorics();
+        this.initializeNbPlayers();
+        this.initializeAvgs();
     },
     methods: {
         initializeScores() {
@@ -116,40 +117,69 @@ export default {
                 player.score = this.limit;
             });
         },
+        initializeHistorics() {
+            this.players.forEach(player => {
+                player.historic = [];
+            });
+        },
+        initializeNbPlayers() {
+            this.nb_players = this.players.length;
+        },
+        initializeAvgs() {
+            this.players.forEach(player => {
+                player.avg = 0;
+            });
+        },
         valueScored(value) {
-            if (this.scores.length < 3){
+            let have_bust = 0
+            if (this.num_dart < 4){
+                let value_string = ""
                 if (this.multi == ""){
-                this.values_scored.push(value.toString())
-                this.scores.push(value)
-                this.players[this.turn%this.players.length].score -= value
+                    value_string = value.toString()
                 }
                 else if (this.multi == "D"){
-                    this.values_scored.push('D'+value.toString())
-                    this.scores.push(value*2)
-                    this.players[this.turn%this.players.length].score -= value*2
+                    value_string = 'D'+value.toString()
+                    value = value*2
                 }
                 else {
-                    this.values_scored.push('T'+value.toString())
-                    this.scores.push(value*3)
-                    this.players[this.turn%this.players.length].score -= value*3
+                    value_string = 'T'+value.toString()
+                    value = value*3
                 }
-                if (this.players[this.turn%this.players.length].score < 0) {
-                    this.players[this.turn%this.players.length].score += this.scores.reduce((total, current) => total + current, 0)
-                    while (this.values_scored.length < 3) {
-                        this.values_scored.push("BUST");
-                        this.scores.push(0)
+                this.players[this.turn%this.nb_players].score -= value
+                let hist = this.players[this.turn%this.nb_players].historic
+                let current_leg = Math.floor(this.turn/this.nb_players)+1
+                if (this.players[this.turn%this.nb_players].score < 0) {
+                    let leg_loop = current_leg
+                    let i = hist.length
+                    while (leg_loop == current_leg){
+                        i = i-1
+                        leg_loop = hist[i]['leg']
                     }
+                    let score_last_leg = hist[i]['score_after']
+                    this.players[this.turn%this.nb_players].score = score_last_leg
+                    have_bust = 1
                 }
+                hist.push({
+                    'leg': Math.floor(this.turn/this.nb_players)+1,
+                    'dart_in_leg': this.num_dart,
+                    'score_dart': value,
+                    'value_dart': value_string,
+                    'score_after': this.players[this.turn%this.nb_players].score
+                })
+                this.players[this.turn%this.nb_players].avg = this.getAvg(this.players[this.turn%this.nb_players])
+                this.num_dart++
+            }
+            if (have_bust == 1){
+                this.turn++
+                this.num_dart = 1
             }
             setTimeout(() => {
-                if (this.values_scored.length == 3){
-                this.historic_values.push(this.values_scored)
-                this.historic_scores.push(this.scores)
+                if (this.num_dart == 4){
                 this.turn++
-                this.scores = []
-                this.values_scored = []
+                this.num_dart = 1
             }
             }, 2500);
+            console.log(this.players)
         },
         message(player){
             if (player.score<0){
@@ -157,21 +187,70 @@ export default {
             }
         },
         undo(){
-            if (this.values_scored.length ==0){
-                if (this.historic_scores.length !== 0){
-                    this.scores = this.historic_scores[this.historic_scores.length-1]
-                    this.values_scored = this.historic_values[this.historic_values.length-1]
-                }
-                this.historic_scores.pop()
-                this.historic_values.pop()
-                this.turn--
+            if (this.num_dart == 1){ //Retour au joueur précédent
+                this.turn = this.turn-1
             }
-            this.values_scored.pop()
-            let score_to_add = this.scores.pop()
-            this.players[this.turn%this.players.length].score += score_to_add
+            let current_player = this.turn%this.nb_players
+            let current_player_historic = this.players[current_player].historic
+            current_player_historic.pop()
+            if (current_player_historic.length - 1 >= 0){
+                let last_score = current_player_historic[current_player_historic.length - 1]['score_after']
+                this.players[current_player].score = last_score
+            }
+            else {
+                this.players[current_player].score = this.limit
+            }
+            this.num_dart = this.num_dart - 1
+            if (this.num_dart == 0){ 
+                this.num_dart = 3
+            }
+            this.players[current_player].avg = this.getAvg(this.players[current_player])
+        },
+        getAvg(player){
+            let hist = player.historic
+            if (hist.length == 0){
+                return 0
+            }
+            let listScores = hist.map(item => item.score_dart)
+            let sumScores = listScores.reduce((acc, score) => acc + score, 0)
+            let mean = sumScores / listScores.length
+            let round = mean.toFixed(2)
+            return parseFloat(round)
         }
     },
     computed: {
+        lastPlayerDarts(){
+            let last_player = (this.turn-1)%this.nb_players
+            let last_player_historic = this.players[last_player].historic
+            let nb_darts = last_player_historic[last_player_historic.length - 1]['dart_in_leg']
+            let last_darts = []
+            for (let i = last_player_historic.length - nb_darts; i <= last_player_historic.length - 1; i++) {
+                last_darts.push(last_player_historic[i]['value_dart'])
+            }
+            return last_darts
+        },
+        currentDarts(){
+            let current_darts = []
+            if (this.num_dart > 1){
+                let current_player = this.turn%this.nb_players
+                let current_player_historic = this.players[current_player].historic
+                for (let i = current_player_historic.length - this.num_dart + 1; i <= current_player_historic.length - 1; i++) {
+                    current_darts.push(current_player_historic[i]['value_dart'])
+                }
+            }
+            return current_darts
+        },
+        currentScores(){
+            let current_scores = []
+            if (this.num_dart > 1){
+                let current_player = this.turn%this.nb_players
+                let current_player_historic = this.players[current_player].historic
+                for (let i = current_player_historic.length - this.num_dart + 1; i <= current_player_historic.length - 1; i++) {
+                    current_scores.push(current_player_historic[i]['score_dart'])
+                }
+            }
+            return current_scores
+        }
     },
 }
 </script>
