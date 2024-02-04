@@ -16,11 +16,10 @@
                     </template>
                 </v-row>
                 <v-row justify="center">
-                    <v-col cols="8">
+                    <v-col cols="8" v-if="!this.is_bust">
                         <v-card class="big-border-bottom mt-2" :style="{ 'border-bottom-color': colors[turn%this.nb_players] }">
                             <v-card-item>
                                 <v-card-title class="text-center text-h6">{{this.players[turn%this.nb_players].name}}</v-card-title>
-                                <v-card-subtitle class="text-center">{{ message(this.players[turn%this.nb_players]) }}</v-card-subtitle>
                                 <v-container>
                                     <v-row>
                                         <v-col v-for="num in 3" :key="num" cols="4">
@@ -33,61 +32,69 @@
                             </v-card-item>
                         </v-card>
                     </v-col>
+                    <v-col cols="8" v-else>
+                        <v-card class="class-busted mt-2" :style="{ 'border-color': colors[(turn-1)%this.nb_players] }">
+                            <v-card-item>
+                                <v-card-title class="text-center text-h6">{{this.players[(turn-1)%this.nb_players].name}} busted !</v-card-title>
+                                <v-card-subtitle class="text-center text-h6">
+                                    Looooser <v-icon icon="mdi-skull-crossbones"></v-icon>
+                                </v-card-subtitle>
+                            </v-card-item>
+                        </v-card>
+                    </v-col>
                 </v-row>
             </v-container>
         </v-main>
         <v-footer app fixed color="blue-grey-lighten-5">
-        <v-container>
-            <v-row>
-                <v-col cols="auto"  class="my-auto"  v-if="this.turn !== 0">
-                    Last : {{this.players[(turn-1)%this.nb_players].name}} - {{ lastPlayerDarts.join('/') }}
-                </v-col>
-                <v-col cols="7"  class="my-auto"  v-else>
-                </v-col>
-                <v-col cols="auto" class="my-auto" v-if="(this.turn !==0) || (this.num_dart !== 1)">
-                    <v-btn block @click="undo()">
-                        ANNULER
-                    </v-btn>
-                </v-col>
-            </v-row>
-            <v-row>
-                <v-col cols="10" class="my-auto mx-0">
-                    <v-btn-toggle
-                        v-model="multi"
-                        divided
-                        color="primary"
-                        variant="outlined"
-                        group
-                        compact
-                        mandatory
-                    >
-                        <v-btn value="">
-                        Simple
-                        </v-btn>
-                        <v-btn value="D">
-                        Double
-                        </v-btn>
-                        <v-btn value="T">
-                        Triple
-                        </v-btn>
-                    </v-btn-toggle>
-                </v-col>
-                <v-col cols="2" class="my-auto">
-                    <v-btn block color="primary" @click="valueScored(0)">0</v-btn>
-                </v-col>
-            </v-row>
-            <v-row justify="center">
-                <v-col v-for="num in 20" :key="num" cols="2">
-                    <v-btn block color="primary" @click="valueScored(num)">{{multi}}{{num}}</v-btn>
-                </v-col>
-                <v-col cols="2" v-if="multi==''">
-                    <v-btn block color="primary" @click="valueScored(25)">25</v-btn>
-                </v-col>
-                <v-col cols="2" v-if="multi=='D'">
-                    <v-btn block color="primary" @click="valueScored(25)">BULL</v-btn>
-                </v-col>
-            </v-row>
-        </v-container>
+            <v-container>
+                <v-row>
+                    <v-col cols="auto" class="my-auto" v-if="(this.turn !==0) || (this.num_dart !== 1)">
+                        <v-btn @click="undo()" rounded="circle" color="primary"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path fill="currentColor" d="m20 16l-5.5 5.5l-1.42-1.41L16.17 17H10.5a6.5 6.5 0 1 1 0-13H18v2h-7.5C8 6 6 8 6 10.5S8 15 10.5 15h5.67l-3.08-3.09l1.41-1.41L20 16Z"/></svg></v-btn>
+                    </v-col>
+                    <v-col cols="auto"  class="my-auto"  v-if="this.turn !== 0">
+                        <p class="font-weight-bold">Last : {{this.players[(turn-1)%this.nb_players].name}} - {{ lastPlayerDarts.join('/') }}</p>
+                    </v-col>
+                    <v-col cols="7"  class="my-auto"  v-else>
+                    </v-col>
+                </v-row>
+                <v-row>
+                    <v-col cols="10" class="my-auto mx-0">
+                        <v-btn-toggle
+                            v-model="multi"
+                            divided
+                            color="primary"
+                            variant="outlined"
+                            group
+                            compact
+                            mandatory
+                        >
+                            <v-btn value="">
+                            Simple
+                            </v-btn>
+                            <v-btn value="D">
+                            Double
+                            </v-btn>
+                            <v-btn value="T">
+                            Triple
+                            </v-btn>
+                        </v-btn-toggle>
+                    </v-col>
+                    <v-col cols="2" class="my-auto">
+                        <v-btn block color="primary" @click="valueScored(0)">0</v-btn>
+                    </v-col>
+                </v-row>
+                <v-row justify="center">
+                    <v-col v-for="num in 20" :key="num" cols="2">
+                        <v-btn block color="primary" @click="valueScored(num)">{{multi}}{{num}}</v-btn>
+                    </v-col>
+                    <v-col cols="2" v-if="multi==''">
+                        <v-btn block color="primary" @click="valueScored(25)">25</v-btn>
+                    </v-col>
+                    <v-col cols="2" v-if="multi=='D'">
+                        <v-btn block color="primary" @click="valueScored(25)">BULL</v-btn>
+                    </v-col>
+                </v-row>
+            </v-container>
         </v-footer>
     </v-app>
 </template>
@@ -103,6 +110,7 @@ export default {
             turn: 0,
             multi: "",
             num_dart: 1,
+            is_bust: false
         }
     },
     created() {
@@ -133,16 +141,11 @@ export default {
         valueScored(value) {
             let have_bust = 0
             if (this.num_dart < 4){
-                let value_string = ""
-                if (this.multi == ""){
-                    value_string = value.toString()
-                }
-                else if (this.multi == "D"){
-                    value_string = 'D'+value.toString()
+                let value_string = this.multi+value.toString()
+                if (this.multi == "D"){
                     value = value*2
                 }
-                else {
-                    value_string = 'T'+value.toString()
+                else if (this.multi == "T"){
                     value = value*3
                 }
                 this.players[this.turn%this.nb_players].score -= value
@@ -170,6 +173,10 @@ export default {
                 this.num_dart++
             }
             if (have_bust == 1){
+                this.is_bust = true;
+                setTimeout(() => {
+                    this.is_bust = false
+                }, 1500);
                 this.turn++
                 this.num_dart = 1
             }
@@ -179,12 +186,6 @@ export default {
                 this.num_dart = 1
             }
             }, 2500);
-            console.log(this.players)
-        },
-        message(player){
-            if (player.score<0){
-                return 'looser'
-            }
         },
         undo(){
             if (this.num_dart == 1){ //Retour au joueur précédent
@@ -216,7 +217,7 @@ export default {
             let mean = sumScores / listScores.length
             let round = mean.toFixed(2)
             return parseFloat(round)
-        }
+        },
     },
     computed: {
         lastPlayerDarts(){
@@ -258,5 +259,9 @@ export default {
 <style>
   .big-border-bottom {
     border-bottom: 5px solid;
+  }
+  .class-busted {
+    border: 5px solid;
+    background-color: mistyrose;
   }
 </style>
