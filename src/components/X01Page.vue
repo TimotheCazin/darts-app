@@ -103,9 +103,9 @@ export default {
     name: 'X01Page',
     data() {
         return {
-            players: [{'name':'Tim'},{'name':'Titou'},{'name':'Lili'}],
+            players: this.$store.state.players,
             nb_players: 0,
-            limit: 301,
+            limit: this.$store.state.limit_x01,
             colors: ['red', 'blue', 'yellow', 'green', 'purple', 'orange', 'pink', 'teal'],
             turn: 0,
             multi: "",
