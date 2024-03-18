@@ -1,4 +1,6 @@
-# darts-app
+# darts-app, an app to play darts in a fun and easy way
+
+
 
 ## Project setup
 ```
