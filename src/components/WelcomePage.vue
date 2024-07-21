@@ -98,6 +98,7 @@
                         Fermer
                     </v-btn>
                     <v-btn
+                        :disabled="players.length == 0"
                         color="blue-darken-1"
                         @click="launchGame"
                     >

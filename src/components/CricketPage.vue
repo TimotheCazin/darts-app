@@ -77,7 +77,7 @@
                 </v-chip-group>
             </v-chip>
         </v-row>
-        <WinnerDialog :winner_name="winner_name" :dialog_winner_input="dialog_winner"></WinnerDialog>
+        <WinnerDialog :winner_name="winner_name" :dialog_winner_input="dialog_winner" @retry="$store.dispatch('initializeCricket')"></WinnerDialog>
     </v-container>
 </template>
 <script>

@@ -18,7 +18,7 @@
                 Félicitations à {{ winner_name }} qui gagne la partie !
             </v-card-text>
             <v-card-actions>
-            <v-btn color="primary" @click="dialog_winner = false; $store.dispatch('initializeCricket')">Recommencer</v-btn>
+            <v-btn color="primary" @click="dialog_winner = false; $emit('retry')">Recommencer</v-btn>
             <v-btn color="primary" @click="dialog_winner = false; $router.push('/')">Nouveau jeu</v-btn>
             </v-card-actions>
         </v-card>

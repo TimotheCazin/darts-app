@@ -97,7 +97,7 @@
                 </v-row>
             </v-container>
         </v-footer>
-        <WinnerDialog :winner_name="winner_name" :dialog_winner_input="dialog_winner"></WinnerDialog>
+        <WinnerDialog :winner_name="winner_name" :dialog_winner_input="dialog_winner" @retry="restart()"></WinnerDialog>
     </v-app>
 </template>
 <script>
@@ -113,8 +113,6 @@ export default {
         return {
             iconsMenu: ["mdi mdi-home", "mdi mdi-restart"],
             listMenu: [{isLink:true, url:"/"}, {isLink:false, function: this.restart}],
-            players: this.$store.state.players,
-            nb_players: 0,
             limit: this.$store.state.limit_x01,
             colors: ['red', 'blue', 'yellow', 'green', 'purple', 'orange', 'pink', 'teal'],
             turn: 0,
@@ -128,7 +126,6 @@ export default {
     created() {
         this.initializeScores();
         this.initializeHistorics();
-        this.initializeNbPlayers();
         this.initializeAvgs();
     },
     methods: {
@@ -142,9 +139,6 @@ export default {
             this.players.forEach(player => {
                 player.historic = [];
             });
-        },
-        initializeNbPlayers() {
-            this.nb_players = this.players.length;
         },
         initializeAvgs() {
             this.players.forEach(player => {
@@ -251,6 +245,12 @@ export default {
         },
     },
     computed: {
+        players() {
+            return this.$store.state.players;
+        },
+        nb_players(){
+            return this.players.length;
+        },
         lastPlayerDarts(){
             let last_player = (this.turn-1)%this.nb_players
             let last_player_historic = this.players[last_player].historic
