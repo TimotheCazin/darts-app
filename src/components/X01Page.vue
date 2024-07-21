@@ -47,12 +47,12 @@
             </v-container>
         </v-main>
         <v-footer app fixed color="blue-grey-lighten-5">
-            <v-container>
+            <v-container class="pb-1">
                 <v-row>
-                    <v-col cols="auto" class="my-auto" v-if="(this.turn !==0) || (this.num_dart !== 1)">
+                    <v-col cols="auto" class="my-auto py-0" v-if="(this.turn !==0) || (this.num_dart !== 1)">
                         <v-btn @click="undo()" rounded="circle" color="primary"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path fill="currentColor" d="m20 16l-5.5 5.5l-1.42-1.41L16.17 17H10.5a6.5 6.5 0 1 1 0-13H18v2h-7.5C8 6 6 8 6 10.5S8 15 10.5 15h5.67l-3.08-3.09l1.41-1.41L20 16Z"/></svg></v-btn>
                     </v-col>
-                    <v-col cols="auto"  class="my-auto"  v-if="this.turn !== 0">
+                    <v-col cols="auto"  class="my-auto py-0"  v-if="this.turn !== 0">
                         <p class="font-weight-bold">Last : {{this.players[(turn-1)%this.nb_players].name}} - {{ lastPlayerDarts.join('/') }}</p>
                     </v-col>
                     <v-col cols="7"  class="my-auto"  v-else>
@@ -97,14 +97,17 @@
                 </v-row>
             </v-container>
         </v-footer>
+        <WinnerDialog :winner_name="winner_name" :dialog_winner_input="dialog_winner"></WinnerDialog>
     </v-app>
 </template>
 <script>
 import CircularMenu from "@/components/CircularMenu.vue"
+import WinnerDialog from "@/components/WinnerDialog.vue"
 export default {
     name: 'X01Page',
     components: {
         CircularMenu,
+        WinnerDialog
     },
     data() {
         return {
@@ -117,7 +120,9 @@ export default {
             turn: 0,
             multi: "",
             num_dart: 1,
-            is_bust: false
+            is_bust: false,
+            winner_name: '',
+            dialog_winner: false,
         }
     },
     created() {
@@ -133,6 +138,7 @@ export default {
             });
         },
         initializeHistorics() {
+            this.num_dart = 1;
             this.players.forEach(player => {
                 player.historic = [];
             });
@@ -168,6 +174,9 @@ export default {
                     let score_last_leg = hist[i]['score_after']
                     this.players[this.turn%this.nb_players].score = score_last_leg
                     have_bust = 1
+                } else if (this.players[this.turn%this.nb_players].score == 0) {
+                    this.winner_name = this.players[this.turn%this.nb_players].name
+                    this.dialog_winner = true
                 }
                 hist.push({
                     'leg': Math.floor(this.turn/this.nb_players)+1,
@@ -193,6 +202,7 @@ export default {
                 this.num_dart = 1
             }
             }, 1500);
+            this.multi = "";
         },
         undo(){
             if (this.num_dart == 1){ //Retour au joueur précédent
@@ -227,6 +237,8 @@ export default {
         },
         restart(){
             this.initializeScores()
+            this.initializeHistorics()
+            this.initializeAvgs()
             this.turn = 0
             this.multi = ""
             this.values_scored = []
@@ -254,6 +266,7 @@ export default {
             if (this.num_dart > 1){
                 let current_player = this.turn%this.nb_players
                 let current_player_historic = this.players[current_player].historic
+                console.log(current_player_historic);
                 for (let i = current_player_historic.length - this.num_dart + 1; i <= current_player_historic.length - 1; i++) {
                     current_darts.push(current_player_historic[i]['value_dart'])
                 }

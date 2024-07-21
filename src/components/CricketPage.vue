@@ -77,38 +77,17 @@
                 </v-chip-group>
             </v-chip>
         </v-row>
-        <v-dialog
-        v-model="dialog_winner"
-        width="auto"
-        >
-        <v-card>
-            <v-card-title align="right" class="pb-0">
-                <v-btn
-                    icon="mdi-close"
-                    @click="dialog_winner = false"
-                    density="compact"
-                    variant="text"
-                >
-                </v-btn>
-            </v-card-title>
-            <v-card-text>
-                <v-img src="@/assets/winner.gif"></v-img>
-                Félicitations à {{ winner_name }} qui gagne la partie !
-            </v-card-text>
-            <v-card-actions>
-            <v-btn color="primary" @click="dialog_winner = false; $store.dispatch('initializeCricket')">Recommencer</v-btn>
-            <v-btn color="primary" @click="dialog_winner = false; $router.push('/')">Nouveau jeu</v-btn>
-            </v-card-actions>
-        </v-card>
-        </v-dialog>
+        <WinnerDialog :winner_name="winner_name" :dialog_winner_input="dialog_winner"></WinnerDialog>
     </v-container>
 </template>
 <script>
 import CircularMenu from "@/components/CircularMenu.vue"
+import WinnerDialog from "@/components/WinnerDialog.vue"
 export default {
     name: 'CricketPage',
     components: {
         CircularMenu,
+        WinnerDialog
     },
     data() {
         return {
