@@ -1,5 +1,6 @@
 <template>
     <v-container>
+        <circular-menu :menuCount=2 :icon-class=iconsMenu :menu-url-list=listMenu backgroundColor="#1d3557"></circular-menu>
       <v-row class="text-center">
         <v-col cols="12">
           <v-img
@@ -179,12 +180,16 @@
   </template>
   
   <script>
-  
+  import CircularMenu from "@/components/CircularMenu.vue"
   export default {
     name: 'WelcomePage',
-  
+    components: {
+        CircularMenu,
+    },
     data() {
         return {
+            iconsMenu: ["mdi mdi-home", "mdi mdi-account"],
+            listMenu: [{isLink:true, url:"/"}, {isLink:true, url: "/"}],
             dialog_x01: false,
             dialog_cricket: false,
             limit: "301",

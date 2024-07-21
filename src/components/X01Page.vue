@@ -1,6 +1,7 @@
 <template>
     <v-app>
         <v-main>
+            <circular-menu @process="processClickMenu($event)" :menuCount=2 :icon-class=iconsMenu :menu-url-list=listMenu backgroundColor="#1d3557"></circular-menu>
             <v-container>
                 <v-row justify="center">
                     <template v-for="(player, i) in players" :key="i">
@@ -15,7 +16,7 @@
                         </v-card>
                     </template>
                 </v-row>
-                <v-row justify="center">
+                <v-row justify="center" v-if="this.nb_players > 0">
                     <v-col cols="8" v-if="!this.is_bust">
                         <v-card class="big-border-bottom mt-2" :style="{ 'border-bottom-color': colors[turn%this.nb_players] }">
                             <v-card-item>
@@ -99,10 +100,16 @@
     </v-app>
 </template>
 <script>
+import CircularMenu from "@/components/CircularMenu.vue"
 export default {
     name: 'X01Page',
+    components: {
+        CircularMenu,
+    },
     data() {
         return {
+            iconsMenu: ["mdi mdi-home", "mdi mdi-restart"],
+            listMenu: [{isLink:true, url:"/"}, {isLink:false, function: this.restart}],
             players: this.$store.state.players,
             nb_players: 0,
             limit: this.$store.state.limit_x01,
@@ -185,7 +192,7 @@ export default {
                 this.turn++
                 this.num_dart = 1
             }
-            }, 2500);
+            }, 1500);
         },
         undo(){
             if (this.num_dart == 1){ //Retour au joueur précédent
@@ -217,6 +224,18 @@ export default {
             let mean = sumScores / listScores.length
             let round = mean.toFixed(2)
             return parseFloat(round)
+        },
+        restart(){
+            this.initializeScores()
+            this.turn = 0
+            this.multi = ""
+            this.values_scored = []
+            this.scores = []
+            this.historic_values = []
+            this.historic_scores = []
+        },
+        processClickMenu(e){
+            (this.listMenu[e].function)()
         },
     },
     computed: {
